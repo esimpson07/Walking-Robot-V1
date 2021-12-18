@@ -1,2 +1,3 @@
 # Walking-Robot-V1
-Walking robot code from December to present (December 18th)
+Includes technical specifications about the walking robot
+- Wiring diagram of the connections between the servo driver, the batteries, the regulator, and the ESP board
