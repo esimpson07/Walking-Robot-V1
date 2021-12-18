@@ -1,5 +1,4 @@
 #include <Servo.h>
-Servo sFRFservo;
 double servoSpeed = 0;
 double servoTarget = 180;
 double servoPos = 0;
