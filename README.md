@@ -1,2 +1,5 @@
 # Walking-Robot-V1
-Walking robot code from December to present (December 18th)
+Specifications about the first design of the walking robot
+- Technical specs such as servo types & connections between the batteries, regulator, servo driver, and ESP board
+- Actuation drawings for the robot legs
+- Walking sequences
