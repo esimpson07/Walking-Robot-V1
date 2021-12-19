@@ -2,9 +2,6 @@
 #define  i2cport 0x40
 HCPCA9685 HCPCA9685(i2cport);
 
-double servoSpeed = 1;
-double distance = 35;
-
 double s1c = 90;
 double s1t = 45;
 double s2c = 90;
@@ -30,10 +27,16 @@ double s11t = 90;
 double s12c = 90;
 double s12t = 90;
 
-int cycle = 0;
+double servoSpeed = 2;
+double distance = 35;
+long cycle = 0;
 long pastTime = 0;
 long currentTime = 0;
-long delayTime = 35;
+long delayTime = 25;
+int sChange = 1.5;
+int sHeight = 50;
+int sRaise = sHeight + 30;
+int sMid = sHeight;
 
 void s1walk(){
   if (s1c > s1t + servoSpeed){
@@ -232,11 +235,6 @@ int c2 = 0;
 int sHeight = 45;
 int c4 = 45;
 int c5 = 90;*/
-
-int sChange = 1.66;
-int sRaise = 120;
-int sHeight = 60;
-int sMid = sHeight;
 
 void FRmove(){
   if(cycle >= 0 && cycle < 13){
