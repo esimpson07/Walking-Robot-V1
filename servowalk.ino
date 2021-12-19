@@ -289,6 +289,7 @@ void BRmove(){
     s8t = sRaise; //135
   } else if(cycle >= 163 && cycle < 175){
     s9t = sMid + (distance * sChange); //135
+    
   }
 }
 
