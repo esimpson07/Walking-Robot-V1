@@ -3,7 +3,7 @@
 HCPCA9685 HCPCA9685(i2cport);
 
 double servoSpeed = 180;
-double distance = 40;
+double distance = 0;
 
 double s1c = 90;
 double s1t = 45;
@@ -235,7 +235,7 @@ int c5 = 90;*/
 
 int sChange = 1.66;
 int sRaise = 170;
-int sHeight = 60;
+int sHeight = 0;
 int sMid = sHeight;
 
 void FRmove(){
@@ -253,30 +253,30 @@ void FRmove(){
 }
 
 void FLmove(){
-  if(cycle >= 0 && cycle < 25){
-    s6t = sMid + (distance * sChange);
-  } else if(cycle >= 50 && cycle < 63){
-    s5t = sRaise;
-  } else if(cycle >= 63 && cycle < 75){
-    s6t = sMid - distance;
-  } else if(cycle >= 75 && cycle < 100){
-    s5t = sHeight;
-  } else if(cycle >= 150 && cycle < 175){
+  if(cycle < 25 && cycle >= 0){
     s6t = sMid;
+  } else if(cycle >= 50 && cycle < 75){
+    s6t = sMid + distance;
+  } else if(cycle >= 100 && cycle < 113){
+    s5t = sRaise;
+  } else if(cycle >= 113 && cycle < 125){
+    s6t = sMid - (distance * sChange);
+  } else if(cycle >= 125 && cycle < 150){
+    s5t = sHeight;
   }
 }
 
 void BLmove(){
-  if(cycle < 25 && cycle >= 0){
-    s12t = sMid;
-  } else if(cycle >= 50 && cycle < 75){
+  if(cycle >= 0 && cycle < 25){
     s12t = sMid - distance;
-  } else if(cycle >= 100 && cycle < 113){
+  } else if(cycle >= 50 && cycle < 63){
     s11t = sRaise;
-  } else if(cycle >= 113 && cycle < 125){
+  } else if(cycle >= 63 && cycle < 75){
     s12t = sMid + (distance * sChange);
-  } else if(cycle >= 125 && cycle < 150){
+  } else if(cycle >= 75 && cycle < 100){
     s11t = sHeight;
+  } else if(cycle >= 150 && cycle < 175){
+    s12t = sMid;
   }
 }
 
