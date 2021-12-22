@@ -27,17 +27,18 @@ double s11t = 90;
 double s12c = 90;
 double s12t = 90;
 
-double servoSpeed = 10; //orignally 2
-double distance = 45; // orignally 35
+double wSpeed = 0;
+double servoSpeed = 180; //orignally 2
+double distance = 0; // orignally 35
 long cycle = 0;
 long pastTime = 0;
 long currentTime = 0;
-long delayTime = 3;
+long delayTime = 2;
 int sChange = 1.5; // originally 1.5
 int sHeight = 50;
 int sRaise = sHeight + 35;
 int sMid = sHeight;
-int sTurnAngle = 60;
+int sTurnAngle = 55;
 int turn = 0; // originally 30
 
 //All s1, s2, s3 etc. all are servos on the robot
