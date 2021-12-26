@@ -387,7 +387,6 @@ void setup() {
   Serial.setTimeout(5);
   HCPCA9685.Init(SERVO_MODE);
   HCPCA9685.Sleep(false);
-    // Initialize MPU6050
   Serial.println("Initialize MPU6050");
   while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
   {
