@@ -1,16 +1,14 @@
-#include "HCPCA9685.h"
-#define  i2cport 0x40
 #include <Wire.h>
-#include <MPU6050.h>
 #include <ESP8266WiFi.h>
+#include "HCPCA9685.h"
+#define servoDriver 0x40
 #define SERVERMODE 0
 #define BAUD_SERIAL 115200
 #define RXBUFFERSIZE 1024
-#define STACK_PROTECTOR  512 // bytes
+#define STACK_PROTECTOR  512
 #define MAX_SRV_CLIENTS 2
 
-MPU6050 mpu;
-HCPCA9685 HCPCA9685(i2cport);
+HCPCA9685 HCPCA9685(servoDriver);
 
 const int port = 23;
 WiFiServer server(port);
@@ -26,6 +24,7 @@ IPAddress subnet(255,255,255,0);
 String id = "ESPsoftAP_10";
 String pw = "Soft_AP_PW";
 #endif
+
 String sbuf;
 double val1;
 double val2;
@@ -57,18 +56,22 @@ double s12t = 90;
 
 double wSpeed = 0;
 double tSpeed = 0;
-double servoSpeed = 6 * (abs(wSpeed) + 0.1); //orignally 2
+double servoSpeed = 6 * (abs(wSpeed) + 0.1);
 double distance = wSpeed * 35;
 long delayTime = 15 - (abs(wSpeed) * 14);
 long cycle = 0;
 long pastTime = 0;
 long currentTime = 0;
-int sChange = 1.5; // originally 1.5
+int sChange = 1.5;
 int sHeight = 50;
 int sRaise = sHeight + 35;
 int sMid = sHeight;
 int sTurnAngle = 55;
 int turn = tSpeed * 60;
+
+const int MPU=0x68;
+int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+int16_t X,Y,Z;
 
 //All s1, s2, s3 etc. all are servos on the robot
 //s1, s4, s7, and s10 are all the turn servos
@@ -383,19 +386,15 @@ void servoUpdate(){
 }
 
 void setup() {
+  Wire.begin();
+  Wire.beginTransmission(MPU);
+  Wire.write(0x6B); 
+  Wire.write(0);    
+  Wire.endTransmission(true);
   Serial.begin(115200);
   Serial.setTimeout(5);
   HCPCA9685.Init(SERVO_MODE);
   HCPCA9685.Sleep(false);
-  Serial.println("Initialize MPU6050");
-  while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
-  {
-    Serial.println("Could not find a valid MPU6050 sensor, check wiring!");
-    delay(500);
-  }
-  mpu.calibrateGyro();
-  mpu.setThreshold(3);
-  checkSettings();
   
   #if SERVERMODE
   WiFi.mode(WIFI_STA);
@@ -405,7 +404,6 @@ void setup() {
     Serial.print('.');
     delay(500);
   }
-  
   Serial.println();
   Serial.print("connected, address=");
   Serial.println(WiFi.localIP());
@@ -416,58 +414,16 @@ void setup() {
   {
     WiFi.softAPConfig(local_ip, gateway, subnet);
     Serial.println("Wifi Ready");
-  }
-  else
-  {
+  } else {
     Serial.print("WiFi Failed: ");
     Serial.println(result);
   }
-
   #endif
-
   server.begin();
   server.setNoDelay(true);
 }
 
-void checkSettings()
-{
-  Serial.println();
-  
-  Serial.print(" * Sleep Mode:        ");
-  Serial.println(mpu.getSleepEnabled() ? "Enabled" : "Disabled");
-  
-  Serial.print(" * Clock Source:      ");
-  switch(mpu.getClockSource())
-  {
-    case MPU6050_CLOCK_KEEP_RESET:     Serial.println("Stops the clock and keeps the timing generator in reset"); break;
-    case MPU6050_CLOCK_EXTERNAL_19MHZ: Serial.println("PLL with external 19.2MHz reference"); break;
-    case MPU6050_CLOCK_EXTERNAL_32KHZ: Serial.println("PLL with external 32.768kHz reference"); break;
-    case MPU6050_CLOCK_PLL_ZGYRO:      Serial.println("PLL with Z axis gyroscope reference"); break;
-    case MPU6050_CLOCK_PLL_YGYRO:      Serial.println("PLL with Y axis gyroscope reference"); break;
-    case MPU6050_CLOCK_PLL_XGYRO:      Serial.println("PLL with X axis gyroscope reference"); break;
-    case MPU6050_CLOCK_INTERNAL_8MHZ:  Serial.println("Internal 8MHz oscillator"); break;
-  }
-  
-  Serial.print(" * Gyroscope:         ");
-  switch(mpu.getScale())
-  {
-    case MPU6050_SCALE_2000DPS:        Serial.println("2000 dps"); break;
-    case MPU6050_SCALE_1000DPS:        Serial.println("1000 dps"); break;
-    case MPU6050_SCALE_500DPS:         Serial.println("500 dps"); break;
-    case MPU6050_SCALE_250DPS:         Serial.println("250 dps"); break;
-  } 
-  
-  Serial.print(" * Gyroscope offsets: ");
-  Serial.print(mpu.getGyroOffsetX());
-  Serial.print(" / ");
-  Serial.print(mpu.getGyroOffsetY());
-  Serial.print(" / ");
-  Serial.println(mpu.getGyroOffsetZ());
-  
-  Serial.println();
-}
-
-void sRun(){
+void serverUpdate(){
   if (server.hasClient()) {
     for (int i = 0; i < MAX_SRV_CLIENTS; i++) {
       if (!serverClients[i]) {
@@ -493,8 +449,6 @@ void sRun(){
       size_t tcp_got = serverClients[i].read(buf, maxToSerial);
 
       sbuf = String((char*)buf);
-
-      //serverClients[i].println("0");
       if (sbuf.length() > 0 && sbuf.substring(0,1) != 0) {
         val1 = sbuf.substring(0,2).toInt();
         val2 = sbuf.substring(2,4).toInt();
@@ -503,23 +457,18 @@ void sRun(){
         serverClients[i].print("walkSpeed = ");
         serverClients[i].println(wSpeed);
         serverClients[i].print("wSpeed = ");
-        serverClients[i].print("turnspeed = ");
         serverClients[i].println(tSpeed);
-        Serial.println(wSpeed);
-        Serial.println(val1);
-        Serial.println((val1 - 40) / 40);
       }
-
+    serverClients[i].println("Gyroscope: ");
+    serverClients[i].print("X = "); serverClients[i].println(X);
+    serverClients[i].print("Y = "); serverClients[i].println(Y);
+    serverClients[i].print("Z = "); serverClients[i].println(Z);
       
     }
   }
 }
 
-void loop() {
-  servoSpeed = 6 * (abs(wSpeed) + 0.1); //orignally 2
-  distance = wSpeed * 35;
-  delayTime = 15 - (abs(wSpeed) * 14);
-  turn = tSpeed;
+void cycleUpdate(){
   if(wSpeed < 0){
     sChange = 1;
     if(distance > 20){
@@ -528,8 +477,10 @@ void loop() {
   } else {
     sChange = 1.5;
   }
-  sRun();
-  currentTime = millis();
+  servoSpeed = 6 * (abs(wSpeed) + 0.1); //orignally 2
+  distance = wSpeed * 35;
+  delayTime = 15 - (abs(wSpeed) * 14);
+  turn = tSpeed;
   servoUpdate();
   FRmove();
   FLmove();
@@ -542,12 +493,33 @@ void loop() {
     }
     pastTime = currentTime;
   }
-  
-  /*Vector rawGyro = mpu.readRawGyro();
-  Serial.print(" Xraw = ");
-  Serial.print(rawGyro.XAxis);
-  Serial.print(" Yraw = ");
-  Serial.print(rawGyro.YAxis);
-  Serial.print(" Zraw = ");
-  Serial.println(rawGyro.ZAxis);*/
+}
+
+void IMUUpdate(){
+  Wire.beginTransmission(MPU);
+  Wire.write(0x3B);  
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU,12,true);  
+  GyX=Wire.read()<<8|Wire.read();    
+  GyY=Wire.read()<<8|Wire.read();  
+  GyZ=Wire.read()<<8|Wire.read();  
+  AcX=Wire.read()<<8|Wire.read();  
+  AcY=Wire.read()<<8|Wire.read();  
+  AcZ=Wire.read()<<8|Wire.read();  
+  X = GyX / 180;
+  Y = GyY / 180;
+  Z = (GyZ / 180) - 15;
+
+  Serial.println("Gyroscope: ");
+  Serial.print("X = "); Serial.println(X);
+  Serial.print("Y = "); Serial.println(Y);
+  Serial.print("Z = "); Serial.println(Z);
+  Serial.println(" ");
+}
+
+void loop() {
+  currentTime = millis();
+  cycleUpdate();
+  IMUUpdate();
+  serverUpdate();
 }
