@@ -15,8 +15,7 @@ WiFiServer server(port);
 WiFiClient serverClients[MAX_SRV_CLIENTS];
 
 #if SERVERMODE
-const char* ssid = "PandoraAccessPoint";
-const char* password = "b8070ecd10cd20";
+//nothing
 #else
 IPAddress local_ip(192,168,1,1);
 IPAddress gateway(192,168,1,1);
