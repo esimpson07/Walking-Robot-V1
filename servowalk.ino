@@ -6,7 +6,7 @@
 #define BAUD_SERIAL 115200
 #define RXBUFFERSIZE 1024
 #define STACK_PROTECTOR  512
-#define MAX_SRV_CLIENTS 2
+#define MAX_SRV_CLIENTS 5
 
 HCPCA9685 HCPCA9685(servoDriver);
 
@@ -15,7 +15,8 @@ WiFiServer server(port);
 WiFiClient serverClients[MAX_SRV_CLIENTS];
 
 #if SERVERMODE
-//nothing
+const char* ssid = "PandoraAccessPoint";
+const char* password = "b8070ecd10cd20";
 #else
 IPAddress local_ip(192,168,1,1);
 IPAddress gateway(192,168,1,1);
@@ -285,8 +286,9 @@ void FRmove(){
     s3t = sMid - (distance * sChange);
     s1t = sTurnAngle + (turn * 2);
   } else if(cycle >= 25 && cycle < 50){
-    s2t = sHeight;
+    //nothing
   } else if(cycle >= 75 && cycle < 100){
+    s2t = sHeight;
     s1t = sTurnAngle + turn;
   }else if(cycle >= 100 && cycle < 125){
     s3t = sMid;
@@ -311,16 +313,18 @@ void FLmove(){
     s6t = sMid - (distance * sChange);
     s4t = sTurnAngle - (turn * 2);
   } else if(cycle >= 125 && cycle < 150){
-    s5t = sHeight;
+    //nothing
   } else if(cycle >= 150 && cycle < 175){
+    s5t = sHeight;
     s4t = sTurnAngle - turn;
   }
 }
 
 void BRmove(){
   if(cycle >= 175 && cycle < 200){
-    s8t = sHeight; //70
+    //nothing
   } else if(cycle >= 0 && cycle < 25){
+    s8t = sHeight; //70
     s7t = sTurnAngle - turn;
   } else if(cycle >= 50 && cycle < 75){
     s9t = sMid; //90
@@ -348,8 +352,9 @@ void BLmove(){
     s12t = sMid + (distance * sChange);
     s10t = sTurnAngle + (turn * 2);
   } else if(cycle >= 75 && cycle < 100){
-    s11t = sHeight;
+    //nothing
   } else if(cycle >= 100 && cycle < 125){
+    s11t = sHeight;
     s10t = sTurnAngle + turn;
   } else if(cycle >= 150 && cycle < 175){
     s12t = sMid;
@@ -451,18 +456,14 @@ void serverUpdate(){
       if (sbuf.length() > 0 && sbuf.substring(0,1) != 0) {
         val1 = sbuf.substring(0,2).toInt();
         val2 = sbuf.substring(2,4).toInt();
-        wSpeed = (val1 - 40) / 40;
-        tSpeed = (val2 - 40);
-        serverClients[i].print("walkSpeed = ");
-        serverClients[i].println(wSpeed);
-        serverClients[i].print("wSpeed = ");
-        serverClients[i].println(tSpeed);
+        wSpeed = (val1 - 50) / 30;
+        tSpeed = (val2 - 50);
       }
-    serverClients[i].println("Gyroscope: ");
+    /*serverClients[i].println("Gyroscope: ");
     serverClients[i].print("X = "); serverClients[i].println(X);
     serverClients[i].print("Y = "); serverClients[i].println(Y);
     serverClients[i].print("Z = "); serverClients[i].println(Z);
-      
+      */
     }
   }
 }
