@@ -287,7 +287,7 @@ void FRmove(){
     s1t = sTurnAngle + (turn * 2);
   } else if(cycle >= 25 && cycle < 50){
     //nothing
-  } else if(cycle >= 75 && cycle < 100){
+  } else if(cycle >= 50 && cycle < 75){
     s2t = sHeight;
     s1t = sTurnAngle + turn;
   }else if(cycle >= 100 && cycle < 125){
