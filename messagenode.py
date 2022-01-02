@@ -15,8 +15,8 @@ def callback(msg):
     rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
     x = msg.linear.x + 0.03
     y = msg.angular.z
-    cats = bytes(str(str(int((x * 8) + 4)) + str(int((y * 8) + 4))), 'utf-8')
-    cats2 = (str(str(int((x * 8) + 4)) + str(int((y * 8) + 4))))
+    cats = bytes(str(str(int((x * 80) + 50)) + str(int(((-1 * y) * 80) + 50))), 'utf-8')
+    cats2 = (str(str(int((x * 80) + 50)) + str(int((y * 80) + 50))))
     rospy.loginfo("cats = [%s]"%cats2)
     tn.write(cats)
     rospy.loginfo("Telnet interacting!:[%s]"%cats)
