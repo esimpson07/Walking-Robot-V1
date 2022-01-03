@@ -1,0 +1,47 @@
+teleop:
+  move:
+    type: topic
+    message_type: geometry_msgs/Twist
+    topic_name: cmd_vel
+    deadman_buttons: [4]
+    axis_mappings:
+      -
+        axis: 1
+        target: linear.x
+        scale: 1
+        offset: 0
+      -
+        axis: 3
+        target: angular.z
+        scale: 1
+      -
+        axis: 7
+        target: linear.z
+        scale: 1
+
+  stop:
+    type: topic
+    message_type: geometry_msgs/Twist
+    topic_name: cmd_vel
+    deadman_buttons: [0, 2]
+    message_value:
+      -
+        target: linear.x
+        value: 0.0
+      -
+        target: angular.z
+        value: 0.0
+      -
+        target: linear.y
+        value: 0.0
+
+  hello:
+    type: topic
+    message_type: std_msgs/String
+    topic_name: chatter
+    deadman_buttons: [1]
+    message_value:
+      -
+        target: data
+        value: 'Hello'
+
