@@ -28,6 +28,7 @@ String pw = "Soft_AP_PW";
 String sbuf;
 double val1;
 double val2;
+double val3;
 
 double s1c = 90;
 double s1t = 55;
@@ -64,6 +65,8 @@ long pastTime = 0;
 long currentTime = 0;
 int sChange = 1.5;
 int sHeight = 50;
+int high = 40;
+int low = 60;
 int sRaise = sHeight + 35;
 int sMid = sHeight;
 int sTurnAngle = 55;
@@ -456,8 +459,14 @@ void serverUpdate(){
       if (sbuf.length() > 0 && sbuf.substring(0,1) != 0) {
         val1 = sbuf.substring(0,2).toInt();
         val2 = sbuf.substring(2,4).toInt();
+        val3 = sbuf.substring(4,5).toInt();
         wSpeed = (val1 - 50) / 30;
         tSpeed = (val2 - 50);
+        if(val3 == 2){
+          sHeight = low;
+        } else if (val3 == 0){
+          sHeight = high;
+        }
       }
     /*serverClients[i].println("Gyroscope: ");
     serverClients[i].print("X = "); serverClients[i].println(X);
@@ -478,8 +487,9 @@ void cycleUpdate(){
     sChange = 1.5;
   }
   servoSpeed = 6 * (abs(wSpeed) + 0.1); //orignally 2
-  distance = wSpeed * 35;
   delayTime = 15 - (abs(wSpeed) * 14);
+  distance = wSpeed * 35;
+  sRaise = sHeight + 35;
   turn = tSpeed;
   servoUpdate();
   FRmove();
