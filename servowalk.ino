@@ -67,6 +67,7 @@ int sChange = 1.5;
 int sHeight = 50;
 int high = 40;
 int low = 60;
+int newLift = 35;
 int sRaise = sHeight + 35;
 int sMid = sHeight;
 int sTurnAngle = 55;
@@ -464,8 +465,10 @@ void serverUpdate(){
         tSpeed = (val2 - 50);
         if(val3 == 2){
           sHeight = low;
+          newLift = 35;
         } else if (val3 == 0){
           sHeight = high;
+          newLift = 40;
         }
       }
     /*serverClients[i].println("Gyroscope: ");
@@ -489,7 +492,7 @@ void cycleUpdate(){
   servoSpeed = 6 * (abs(wSpeed) + 0.1); //orignally 2
   delayTime = 15 - (abs(wSpeed) * 14);
   distance = wSpeed * 35;
-  sRaise = sHeight + 35;
+  sRaise = sHeight + newLift;
   turn = tSpeed;
   servoUpdate();
   FRmove();
