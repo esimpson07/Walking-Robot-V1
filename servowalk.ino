@@ -325,6 +325,90 @@ void FLmove(){
 }
 
 void BRmove(){
+  if(cycle >= 75 && cycle < 100){
+    //nothing
+  } else if(cycle >= 100 && cycle < 125){
+    s8t = sHeight; //70
+    s7t = sTurnAngle - turn;
+  } else if(cycle >= 150 && cycle < 175){
+    s9t = sMid; //90
+    s7t = sTurnAngle;
+  } else if(cycle >= 0 && cycle < 25){
+    s9t = sMid - distance; //45
+    s7t = sTurnAngle + turn;
+  } else if(cycle >= 50 && cycle < 63){
+    s8t = sRaise; //135
+    s7t = sTurnAngle + (turn * 2);
+  } else if(cycle >= 63 && cycle < 75){
+    s9t = sMid + (distance * sChange); //135
+    s7t = sTurnAngle - (turn * 2);
+  }
+}
+
+void BLmove(){
+  if(cycle >= 100 && cycle < 125){
+    s12t = sMid - distance;
+    s10t = sTurnAngle - turn;
+  } else if(cycle >= 150 && cycle < 163){
+    s11t = sRaise;
+    s10t = sTurnAngle - (turn * 2);
+  } else if(cycle >= 163 && cycle < 175){
+    s12t = sMid + (distance * sChange);
+    s10t = sTurnAngle + (turn * 2);
+  } else if(cycle >= 175 && cycle < 200){
+    //nothing
+  } else if(cycle >= 0 && cycle < 25){
+    s11t = sHeight;
+    s10t = sTurnAngle + turn;
+  } else if(cycle >= 50 && cycle < 75){
+    s12t = sMid;
+    s10t = sTurnAngle;
+  }
+}
+
+void LFRmove(){
+  if(cycle >= 0 && cycle < 13){
+    s2t = sRaise;
+    s1t = sTurnAngle - (turn * 2);
+  } else if(cycle >= 13 && cycle < 25){
+    s3t = sMid - (distance * sChange);
+    s1t = sTurnAngle + (turn * 2);
+  } else if(cycle >= 25 && cycle < 50){
+    //nothing
+  } else if(cycle >= 50 && cycle < 75){
+    s2t = sHeight;
+    s1t = sTurnAngle + turn;
+  }else if(cycle >= 100 && cycle < 125){
+    s3t = sMid;
+    s1t = sTurnAngle;
+  } else if(cycle >= 150 && cycle < 175){
+    s3t = sMid + distance;
+    s1t = sTurnAngle - turn;
+  }
+}
+
+void LFLmove(){
+  if(cycle < 25 && cycle >= 0){
+    s6t = sMid;
+    s4t = sTurnAngle;
+  } else if(cycle >= 50 && cycle < 75){
+    s6t = sMid + distance;
+    s4t = sTurnAngle + turn;
+  } else if(cycle >= 100 && cycle < 113){
+    s5t = sRaise;
+    s4t = sTurnAngle + (turn * 2);
+  } else if(cycle >= 113 && cycle < 125){
+    s6t = sMid - (distance * sChange);
+    s4t = sTurnAngle - (turn * 2);
+  } else if(cycle >= 125 && cycle < 150){
+    //nothing
+  } else if(cycle >= 150 && cycle < 175){
+    s5t = sHeight;
+    s4t = sTurnAngle - turn;
+  }
+}
+
+void LBRmove(){
   if(cycle >= 175 && cycle < 200){
     //nothing
   } else if(cycle >= 0 && cycle < 25){
@@ -345,7 +429,7 @@ void BRmove(){
   }
 }
 
-void BLmove(){
+void LBLmove(){
   if(cycle >= 0 && cycle < 25){
     s12t = sMid - distance;
     s10t = sTurnAngle - turn;
@@ -495,10 +579,17 @@ void cycleUpdate(){
   sRaise = sHeight + newLift;
   turn = tSpeed;
   servoUpdate();
-  FRmove();
-  FLmove();
-  BRmove();
-  BLmove();
+  if(sHeight == high){
+    FRmove();
+    FLmove();
+    BRmove();
+    BLmove();
+  } else if(sHeight == low){
+    LFRmove();
+    LFLmove();
+    LBRmove();
+    LBLmove();
+  }
   if (pastTime + delayTime <= currentTime){
     cycle ++;
     if(cycle > 200){
