@@ -63,8 +63,10 @@ long delayTime = 15 - (abs(wSpeed) * 14);
 long cycle = 0;
 long pastTime = 0;
 long currentTime = 0;
+long newPastTime = 0;
+int countDown = 0;
 int sChange = 1.5;
-int sHeight = 50;
+int sHeight = 60;
 int high = 40;
 int low = 60;
 int newLift = 35;
@@ -72,6 +74,8 @@ int sRaise = sHeight + 35;
 int sMid = sHeight;
 int sTurnAngle = 55;
 int turn = tSpeed * 60;
+
+bool shortFlag = false;
 
 const int MPU=0x68;
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
@@ -541,7 +545,8 @@ void serverUpdate(){
       size_t tcp_got = serverClients[i].read(buf, maxToSerial);
 
       sbuf = String((char*)buf);
-      if (sbuf.length() > 0 && sbuf.substring(0,1) != 0) {
+      Serial.println(sbuf);
+      if (sbuf.length() >= 5  && sbuf.substring(0,1) != 0) {
         val1 = sbuf.substring(0,2).toInt();
         val2 = sbuf.substring(2,4).toInt();
         val3 = sbuf.substring(4,5).toInt();
@@ -554,6 +559,17 @@ void serverUpdate(){
           sHeight = high;
           newLift = 40;
         }
+      } else if (sbuf.toInt() < 1000 && sbuf.substring(0,1) != 0) {
+        Serial.println("less than or equal to 3");
+        val1 = sbuf.substring(0,1).toInt();
+        countDown = sbuf.substring(2,3).toInt();
+        newPastTime = currentTime;
+        shortFlag = true;
+        if (val1 == 1){
+          wSpeed = (sbuf.substring(1,2).toInt() - 50) / 30;
+        } else if(val1 == 2){
+          tSpeed = sbuf.substring(1,2).toInt() - 50;
+        }
       }
     /*serverClients[i].println("Gyroscope: ");
     serverClients[i].print("X = "); serverClients[i].println(X);
@@ -565,6 +581,11 @@ void serverUpdate(){
 }
 
 void cycleUpdate(){
+  if(currentTime > newPastTime + (countDown * 1000) && shortFlag == true){
+    wSpeed = 0;
+    tSpeed = 0;
+    shortFlag = false;
+  }
   if(wSpeed < 0){
     sChange = 1;
     if(distance > 20){
@@ -585,6 +606,11 @@ void cycleUpdate(){
     BRmove();
     BLmove();
   } else if(sHeight == low){
+    LFRmove();
+    LFLmove();
+    LBRmove();
+    LBLmove();
+  } else {
     LFRmove();
     LFLmove();
     LBRmove();
@@ -614,11 +640,11 @@ void IMUUpdate(){
   Y = GyY / 180;
   Z = (GyZ / 180) - 15;
 
-  Serial.println("Gyroscope: ");
+  /*Serial.println("Gyroscope: ");
   Serial.print("X = "); Serial.println(X);
   Serial.print("Y = "); Serial.println(Y);
   Serial.print("Z = "); Serial.println(Z);
-  Serial.println(" ");
+  Serial.println(" ");*/
 }
 
 void loop() {
