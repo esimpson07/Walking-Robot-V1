@@ -580,7 +580,14 @@ void serverUpdate(){
   }
 }
 
-void cycleUpdate(){
+void cycleUpdate(){  
+  if (Serial.available() > 0) {
+    int b = Serial.read();
+    if (b == 63) {
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
+    }
+  }
   if(currentTime > newPastTime + (countDown * 1000) && shortFlag == true){
     wSpeed = 0;
     tSpeed = 0;
